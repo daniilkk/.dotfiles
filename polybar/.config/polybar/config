@@ -1,0 +1,285 @@
+[colors]
+
+background = #282828
+foreground = #d5c4a1
+
+black   = #282828
+red     = #fb4934
+green   = #b8bb26
+yellow  = #fabd2f
+blue    = #83a598
+magenta = #d3869b
+cyan    = #8ec07c
+white   = #d5c4a1
+
+black_bright = #665c54
+
+primary = #ffb52a
+secondary = #e60053
+alert = #bd2c40
+
+[bar/gruvbox]
+monitor = ${env:MONITOR:}
+
+dpi = 168
+enable-ipc = true
+
+width  = 100%
+height = 40
+
+background = ${colors.black}
+foreground = ${colors.white}
+
+; font-0 = "Montserrat Bold:size=11.5;3"
+; font-1 = "Montserrat Bold:size=10.5;3"
+font-0 = "JetBrainsMono Nerd Font:size=11.5"
+font-1 = "JetBrainsMono Nerd Font:size=10.5;3"
+
+line-size = 4
+
+module-margin = 2
+
+padding = 2
+
+modules-left   = bspwm
+modules-center = title 
+modules-right  = pulseaudio-control-input pulseaudio-control-output wlan battery date
+
+wm-restack = bspwm
+
+[bar/example]
+dpi = 168
+monitor = ${env:MONITOR:}
+width = 100%
+height = 40
+;offset-x = 1%
+;offset-y = 1%
+radius = 6.0
+fixed-center = false
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 3
+;line-color = #f00
+
+padding-left = 0
+padding-right = 20
+
+module-margin-left = 1
+module-margin-right = 2
+
+font-0 = fixed:pixelsize=10;1
+font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
+font-2 = siji:pixelsize=10;1
+
+modules-left = bspwm
+modules-center = mpd
+modules-right = alsa pulseaudio wlan eth battery date
+
+;wm-restack = bspwm
+;wm-restack = i3
+
+;override-redirect = true
+
+;scroll-up = bspwm-desknext
+;scroll-down = bspwm-deskprev
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+[module/title]
+type = internal/xwindow
+label = %{T2}%title:0:40:...%
+
+[module/xkeyboard]
+type = internal/xkeyboard
+blacklist-0 = num lock
+
+;format-prefix = ""
+;format-prefix-foreground = ${colors.foreground-alt}
+;format-prefix-underline = ${colors.secondary}
+
+label-layout = %layout%
+label-layout-underline = ${colors.secondary}
+
+label-indicator-padding = 2
+label-indicator-margin = 1
+label-indicator-background = ${colors.secondary}
+label-indicator-underline = ${colors.secondary}
+
+[module/bspwm]
+type = internal/bspwm
+
+label-focused = %name%
+label-focused-background = ${colors.background}
+label-focused-underline= ${colors.magenta}
+label-focused-padding = 1
+
+label-occupied = %name%
+label-occupied-padding = 1
+
+label-urgent = %index%!
+label-urgent-background = ${colors.red}
+label-urgent-padding = 2
+
+label-empty =
+label-empty-foreground = ${colors.foreground}
+label-empty-padding = 1
+
+label-separator = " " 
+
+[module/wlan]
+type = internal/network
+interface = wlan0
+interval = 3.0
+
+format-connected = <label-connected>
+format-connected-underline = ${colors.magenta} 
+label-connected = %{A3:iwgtk:}  %downspeed%%{A}
+
+format-disconnected = <label-disconnected>
+format-disconnected-underline = ${colors.magenta}
+label-disconnected = %{A3:iwgtk:}  disconnected%{A}
+
+[module/eth]
+type = internal/network
+interface = net0
+interval = 3.0
+
+format-connected-underline = ${colors.magenta} 
+format-connected-prefix = 
+label-connected = "Ethernet, lol? Ridiculous."
+
+format-disconnected =
+
+[module/date]
+type = internal/date
+interval = 1
+
+date =
+date-alt = "󰃵 %d/%m/%Y  "
+
+time = "󱑍 %H:%M"
+time-alt = "󱑍 %H:%M:%S"
+
+format-underline = ${colors.cyan} 
+
+label = %date%%time%
+
+
+[module/pulseaudio-control-output]
+type = custom/script
+tail = true
+format-underline = ${colors.green}
+;label-padding = 2
+label-foreground = ${colors.foreground}
+
+exec = pulseaudio-control --icons-volume " " --icon-muted " " --color-muted "fb4934" --format '$VOL_ICON \ ${VOL_LEVEL}% $ICON_NODE $NODE_NICKNAME' --node-nicknames-from "device.description" --node-nickname "alsa_output.pci-0000_00_1b.0.analog-stereo:Internal" --node-nickname "alsa_output.pci-0000_00_03.0.hdmi-stereo:HDMI" listen
+click-right = exec pavucontrol &
+click-left = pulseaudio-control togmute
+click-middle = pulseaudio-control --node-blacklist "alsa_output.pci-0000_01_00.1.hdmi-stereo-extra2" next-node
+scroll-up = pulseaudio-control --volume-step 5 --volume-max 130 --listen-timeout-secs 0 up
+scroll-down = pulseaudio-control --volume-step 5 --volume-max 130 --listen-timeout-secs 0 down
+
+module-margin-right = 10
+
+[module/pulseaudio-control-input]
+type = custom/script
+tail = true
+format-underline = ${colors.red}
+label-foreground = ${colors.foreground}
+
+# Use --node-blacklist to remove the unwanted PulseAudio .monitor that are child of sinks
+exec = pulseaudio-control --node-type input --icons-volume "" --icon-muted "" --color-muted "fb4934" --format '$VOL_ICON ${VOL_LEVEL}%' --node-blacklist "*.monitor" listen
+click-right = exec pavucontrol &
+click-left = pulseaudio-control --node-type input togmute
+click-middle = pulseaudio-control --node-type input next-node
+scroll-up = pulseaudio-control --node-type input --volume-max 130 up
+scroll-down = pulseaudio-control --node-type input --volume-max 130 down
+
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+width = 60
+
+format-volume = <label-volume>
+label-volume =   %percentage:3%%
+
+format-muted-prefix = " "
+label-muted = muted
+label-muted-foreground = ${colors.red}
+
+format-volume-underline = ${colors.blue}
+format-muted-underline = ${colors.blue}
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = ADP1
+full-at = 99
+low-at = 30
+time-format = %H:%M
+poll-interval = 1
+foreground = ${colors.red}
+
+format-charging = %{A3:battery-graph:}<animation-charging>  <label-charging>%{A}
+format-charging-underline = ${colors.blue} 
+label-charging = %percentage%% 
+; 󱐌 
+
+format-discharging = %{A3:battery-graph:}<ramp-capacity>  <label-discharging>%{A}
+format-discharging-underline = ${colors.blue}
+label-discharging = %percentage%%
+
+format-low = %{A3:battery-graph:}<animation-low> <label-low>%{A}
+format-low-underline = ${colors.blue}
+format-low-foreground = ${colors.red}
+label-low = %percentage%%
+
+format-full = %{A3:battery-graph:}<ramp-capacity>  <label-full>%{A}
+format-full-underline = ${colors.blue}
+label-full = %percentage%%
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+; Framerate in milliseconds
+animation-charging-framerate = 500
+
+animation-low-0 = "    "
+animation-low-1 = "   B"
+animation-low-2 = "  BR"
+animation-low-3 = " BRU"
+animation-low-4 = "BRUH"
+animation-low-5 = "RUH "
+animation-low-6 = "UH  "
+animation-low-7 = "H   "
+; animation-low-8 = "    "
+; animation-low-9 = "BRUH"
+; animation-low-10 = "BRUH"
+; animation-low-11 = "BRUH"
+animation-low-framerate = 500
+
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+;pseudo-transparency = false
+
+[global/wm]
+;margin-top = 5
+;margin-bottom = 5
+
+; vim:ft=dosini

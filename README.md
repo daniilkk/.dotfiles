@@ -3,5 +3,10 @@ My dotfiles for:
 - bspwm
 - sxhkd
 - polybar
+- vim
 - neovim
+- zsh
+- tmux (WIP)
+- rofi
+- handlr
 

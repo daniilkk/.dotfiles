@@ -1,0 +1,4 @@
+#!/bin/sh
+#Move node to nth desktop of focused monitor for i3 style keybinds
+    D=$@; \
+    bspc node -d "$(bspc query -D -m | sed -n "$D p")"
